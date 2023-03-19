@@ -27,7 +27,8 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  // lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -36,7 +37,14 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    proxy: {
+      // 路径中有/dev-api的接口被代理，目标包括主机、协议和接口号，因为要绕过同源策略
+      '/dev-api': {
+        target: 'http://39.98.123.211:8170',
+        // 将路径中的/dev-api去掉，因为真实的接口中没有这个开发环境的标记
+        pathRewrite: { '^/dev-api': '' },
+      },
+    },
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
